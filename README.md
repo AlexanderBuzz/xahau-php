@@ -7,8 +7,9 @@ PHP SDK for the [Xahau Network](https://xahau.network), built on
 > are modelled and covered - the eleven that used to live in xrpl_php's
 > `src/Hooks/`, plus `Remit`, `SetRemarks` and the two Cron types that had no
 > model anywhere, and `XahauClient` fills in `NetworkID`, asks the node what a
-> transaction costs and knows the faucets. Still open before the first release:
-> integration tests and examples against the testnet.
+> transaction costs and knows the faucets. An integration suite runs the whole
+> thing against the Xahau testnet. Still open before the first release:
+> `examples/`.
 
 ## Why a separate package
 
@@ -105,8 +106,24 @@ every model here, adjusts the shared list accordingly.
 
 ```console
 composer install
-vendor/bin/phpunit
+vendor/bin/phpunit --testsuite unit          # offline, this is what CI runs
+vendor/bin/phpunit --testsuite integration   # talks to the Xahau testnet
 ```
+
+The integration suite mints a URIToken, sells it, buys it, remarks on it and
+burns it; it creates an account with a `Remit`, and it checks the bundled
+definitions against the ones the node reports. Two things steer it:
+
+| | |
+|---|---|
+| `XAHAU_TESTNET_URL` | the node, default `https://xahau-test.net` |
+| `XAHAU_TEST_SEED` | a funded wallet, so the faucet is left alone |
+
+Without a seed the faucet is asked once per run and the wallet is shared by
+every test - the public faucets allow one request per client every 45 seconds,
+and a refusal is reported as *"The faucet did not return an account address"*,
+which is worth knowing before it puzzles you. A second account is created by a
+`Remit` from the first rather than by asking again.
 
 `SeamTest` is the acceptance test: it checks that shared types are encoded with
 Xahau's ordinals, that types both networks share bit for bit stay identical,
