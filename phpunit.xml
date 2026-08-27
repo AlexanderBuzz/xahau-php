@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<phpunit
+        colors="true"
+        stopOnFailure="false"
+        displayDetailsOnTestsThatTriggerWarnings="true"
+>
+    <!--
+        The integration tests talk to a live Xahau testnet: they are slow, they
+        depend on a faucet and they fail for reasons that have nothing to do
+        with this package. They live in a suite of their own and carry the
+        group 'integration', so that CI and `composer test` can leave them out
+        while the suite can still be run on its own.
+    -->
+    <testsuites>
+        <testsuite name="unit">
+            <directory>tests</directory>
+            <exclude>tests/Integration</exclude>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+</phpunit>

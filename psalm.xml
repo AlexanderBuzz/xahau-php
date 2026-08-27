@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="2"
+    resolveFromConfigFile="true"
+    findUnusedBaselineEntry="false"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="src" />
+        <directory name="tests" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <!--
+            Same reasoning as in xrpl_php: this is a library, so its public
+            surface is used by consumers Psalm cannot see. Every model class
+            and most public methods would be reported as unused.
+        -->
+        <UnusedClass errorLevel="suppress" />
+        <PossiblyUnusedMethod errorLevel="suppress" />
+        <PossiblyUnusedProperty errorLevel="suppress" />
+        <PossiblyUnusedParam errorLevel="suppress" />
+        <PossiblyUnusedReturnValue errorLevel="suppress" />
+
+        <!--
+            The transaction models are meant to be extended, both here and by
+            applications that need a type this package does not ship yet.
+        -->
+        <ClassMustBeFinal errorLevel="suppress" />
+
+        <!--
+            #[\Override] only exists from PHP 8.3, and this package supports
+            ^8.2, which is what CI builds.
+        -->
+        <MissingOverrideAttribute errorLevel="suppress" />
+    </issueHandlers>
+</psalm>

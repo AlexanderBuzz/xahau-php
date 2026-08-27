@@ -1,0 +1,43 @@
+{
+  "name": "hardcastle/xahau_php",
+  "description": "PHP SDK / Client for the Xahau Network, built on hardcastle/xrpl_php",
+  "type": "library",
+  "keywords": [
+    "xahau",
+    "hooks",
+    "xrpl",
+    "blockchain",
+    "client",
+    "sdk"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Alexander Busse",
+      "email": "alexander.busse@posteo.net"
+    }
+  ],
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "Hardcastle\\Xahau_PHP\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Hardcastle\\Xahau_PHP\\Test\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^8.2",
+    "hardcastle/xrpl_php": "^2.3 || ^3.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.5",
+    "vimeo/psalm": "^6.8"
+  },
+  "scripts": {
+    "psalm": "vendor/bin/psalm --config=psalm.xml",
+    "test": "vendor/bin/phpunit --exclude-group integration"
+  }
+}

@@ -1,0 +1,34 @@
+name: Unit Test (PHPUnit)
+on: push
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer, phpunit
+          extensions: gmp, sockets, bcmath
+          coverage: none
+
+      - name: Install composer dependencies
+        uses: php-actions/composer@v6
+        with:
+          php_version: "8.2"
+          php_extensions: gmp sockets bcmath
+          version: latest
+
+      # The integration suite talks to a live Xahau testnet and to its faucet,
+      # so it cannot run on every push. Both switches are set: the suite is
+      # excluded by name and by group, because a test placed outside
+      # tests/Integration by accident should still be held back by its group.
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --testsuite unit --exclude-group integration
+
+      - name: Run Psalm
+        run: vendor/bin/psalm --config=psalm.xml --no-progress
