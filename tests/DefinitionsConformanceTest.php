@@ -17,6 +17,7 @@ use Hardcastle\Xahau_PHP\Xahau;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * Do the transaction models agree with the bundled definitions?
@@ -45,18 +46,28 @@ final class DefinitionsConformanceTest extends TestCase
     private const MODEL_NAMESPACE = 'Hardcastle\\Xahau_PHP\\Models\\Transaction\\TransactionTypes\\';
 
     /**
-     * Fields that xrpl_php's BaseTransaction declares and Xahau does not know.
-     *
-     * These are common fields on the XRP Ledger, so the shared base class is
-     * right to carry them; they simply have no counterpart here. A model may
-     * not use them, and the codec would refuse them, but their presence in the
-     * base class is expected rather than a defect - hence an allowlist with a
-     * reason instead of a failure.
+     * Fields xrpl_php's BaseTransaction declares as common that Xahau does not
+     * know, and that XahauTransaction therefore takes back out again.
      *
      * @var array<string, string>
      */
-    private const XRPL_ONLY_BASE_FIELDS = [
+    private const XRPL_ONLY_COMMON_FIELDS = [
         'Delegate' => 'Account permission delegation (DelegateSet); the amendment does not exist on Xahau.',
+    ];
+
+    /**
+     * The fields Xahau adds to the common set, which the shared base class in
+     * xrpl_php has no reason to carry.
+     *
+     * @var list<string>
+     */
+    private const XAHAU_COMMON_FIELDS = [
+        'EmitDetails',
+        'FirstLedgerSequence',
+        'HookParameters',
+        'HookName',
+        'OperationLimit',
+        'PreviousTxnID',
     ];
 
     /**
@@ -162,40 +173,82 @@ final class DefinitionsConformanceTest extends TestCase
     }
 
     /**
-     * The common fields come from xrpl_php's BaseTransaction and are shared
-     * with the XRP Ledger. Where the two networks have drifted, this test says
-     * so out loud instead of leaving it to be discovered when the codec throws.
+     * XahauTransaction adjusts the common field list in its constructor, so
+     * the effective set only exists on an instance - and running this over
+     * every model also catches one that forgot to extend it.
+     *
+     * @param class-string<BaseTransaction> $class
      */
-    public function testTheCommonFieldsOfTheSharedBaseClassExistOnXahau(): void
+    #[DataProvider('modelClasses')]
+    public function testTheCommonFieldsOfEveryModelExistOnXahau(string $class): void
     {
         $definitions = Xahau::definitions();
+        $shortName = (new ReflectionClass($class))->getShortName();
 
-        /** @var array<string, string> $baseFields */
-        $baseFields = (new ReflectionClass(BaseTransaction::class))->getDefaultProperties()['baseProperties'];
-
-        foreach ($baseFields as $fieldName => $declaredClass) {
-            if (isset(self::XRPL_ONLY_BASE_FIELDS[$fieldName])) {
-                $this->assertFalse(
-                    $this->fieldExists($fieldName),
-                    "{$fieldName} is allowlisted as XRPL-only, but Xahau's definitions now contain it. "
-                    . 'Remove it from XRPL_ONLY_BASE_FIELDS.'
-                );
-
-                continue;
-            }
+        foreach (self::commonFieldsOf($class) as $fieldName => $declaredClass) {
+            $this->assertArrayNotHasKey(
+                $fieldName,
+                self::XRPL_ONLY_COMMON_FIELDS,
+                "{$shortName} still carries the XRP Ledger only common field {$fieldName}. "
+                . (self::XRPL_ONLY_COMMON_FIELDS[$fieldName] ?? '')
+            );
 
             $this->assertTrue(
                 $this->fieldExists($fieldName),
-                "BaseTransaction declares the common field {$fieldName}, which Xahau does not know. If that is "
-                . 'expected, add it to XRPL_ONLY_BASE_FIELDS with the reason.'
+                "{$shortName} carries the common field {$fieldName}, which Xahau does not know. If xrpl_php "
+                . 'added it to BaseTransaction, XahauTransaction has to take it back out.'
             );
 
             $this->assertSame(
                 get_class(SerializedType::getTypeByName($definitions->getFieldInstance($fieldName)->getType())),
                 $declaredClass,
-                "The common field {$fieldName} has a different type on Xahau than BaseTransaction assumes."
+                "The common field {$fieldName} has a different type on Xahau than {$shortName} assumes."
             );
         }
+    }
+
+    /**
+     * Xahau's own common fields have to survive on every model, or a hook can
+     * no longer be given parameters and an emitted transaction cannot be read
+     * back.
+     *
+     * @param class-string<BaseTransaction> $class
+     */
+    #[DataProvider('modelClasses')]
+    public function testEveryModelCarriesXahausOwnCommonFields(string $class): void
+    {
+        $shortName = (new ReflectionClass($class))->getShortName();
+        $common = self::commonFieldsOf($class);
+
+        foreach (self::XAHAU_COMMON_FIELDS as $fieldName) {
+            $this->assertArrayHasKey(
+                $fieldName,
+                $common,
+                "{$shortName} does not carry the Xahau common field {$fieldName}. Does it extend "
+                . 'XahauTransaction rather than BaseTransaction?'
+            );
+        }
+    }
+
+    /**
+     * The effective common fields of a model, read off a constructed instance.
+     *
+     * @param class-string<BaseTransaction> $class
+     * @return array<string, string>
+     */
+    private static function commonFieldsOf(string $class): array
+    {
+        $model = (new ReflectionClass($class))->newInstance([
+            'TransactionType' => (new ReflectionClass($class))->getShortName(),
+            'Account' => 'rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe',
+            'Fee' => '10',
+            'Sequence' => 1,
+        ]);
+
+        /** @var array<string, string> $common */
+        $common = (new ReflectionProperty(BaseTransaction::class, 'baseProperties'))->getValue($model);
+
+        return $common;
     }
 
     private function fieldExists(string $fieldName): bool

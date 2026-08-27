@@ -10,7 +10,7 @@
 
 namespace Hardcastle\Xahau_PHP\Models\Transaction\TransactionTypes;
 
-use Hardcastle\XRPL_PHP\Models\Transaction\TransactionTypes\BaseTransaction;
+use Hardcastle\Xahau_PHP\Models\Transaction\XahauTransaction;
 use Hardcastle\XRPL_PHP\Core\RippleBinaryCodec\Types\AccountId;
 use Hardcastle\XRPL_PHP\Core\RippleBinaryCodec\Types\Blob;
 use Hardcastle\XRPL_PHP\Core\RippleBinaryCodec\Types\Hash256;
@@ -25,7 +25,7 @@ use Hardcastle\XRPL_PHP\Core\RippleBinaryCodec\Types\Vector256;
  *
  * https://docs.xahau.network/features/transaction-types/remit
  */
-class Remit extends BaseTransaction
+class Remit extends XahauTransaction
 {
     protected array $transactionTypeProperties = [
         'Destination' => AccountId::class,

@@ -3,9 +3,11 @@
 PHP SDK for the [Xahau Network](https://xahau.network), built on
 [hardcastle/xrpl_php](https://github.com/AlexanderBuzz/xrpl-php).
 
-> **Status: skeleton.** It proves that the whole stack works against Xahau's
-> definitions and covers a first two transaction types. The remaining Xahau
-> types still live in xrpl_php and move here before the first release.
+> **Status: the transaction types are here.** All thirteen Xahau-only types
+> are modelled and covered - the eleven that used to live in xrpl_php's
+> `src/Hooks/` plus `Remit` and `SetRemarks`. Still missing before the first
+> release: `Cron`/`CronSet`, and a client that fills in `NetworkID` and asks
+> the node for the fee the way Xahau expects.
 
 ## Why a separate package
 
@@ -51,6 +53,29 @@ $client->submitAndWait($signed['tx_blob']);
 somewhere yourself.
 
 `NetworkID` is required by Xahau on every transaction.
+
+## Transaction types
+
+Xahau-only, modelled here:
+
+| | |
+|---|---|
+| `SetHook` | installs, updates and removes hooks |
+| `URITokenMint`, `URITokenBurn`, `URITokenBuy`, `URITokenCreateSellOffer`, `URITokenCancelSellOffer` | URITokens |
+| `Remit`, `SetRemarks` | sending, and remarks on any object |
+| `Invoke`, `Import`, `ClaimReward` | hook calls, migration from the XRP Ledger, balance rewards |
+| `GenesisMint`, `UNLReport` | pseudo transactions, readable but not submittable |
+
+The 47 types Xahau shares with the XRP Ledger are used straight from
+xrpl_php - a model carries only its field list, and the ordinal comes from the
+definitions handed to the codec. Being in the definitions is not the same as
+being live, though: Xahau inherited the definitions of several XRPL amendments
+that are not enabled on it. Check `feature` on a node before relying on one.
+
+Xahau also has six common fields the XRP Ledger does not - `HookParameters`,
+`HookName`, `EmitDetails`, `FirstLedgerSequence`, `OperationLimit` and
+`PreviousTxnID` - and lacks `Delegate`. `XahauTransaction`, the base class of
+every model here, adjusts the shared list accordingly.
 
 ## Tests
 

@@ -116,20 +116,32 @@ abstract class TransactionTypeTestCase extends TestCase
     }
 
     /**
-     * Assert that the XRP Ledger's own definitions read this blob as a
-     * different type, and name which one.
+     * Assert that the XRP Ledger's own definitions read a transaction of this
+     * type as a different type, and name which one.
      *
-     * Only meaningful for the types whose ordinal is taken by something else
-     * on the XRP Ledger - URITokenMint sits on the ordinal that network gives
-     * to XChainAddClaimAttestation. Encoding is unambiguous only relative to a
-     * set of definitions, and this is what proves the bundled set is the one
-     * being used.
+     * Only meaningful for the types whose ordinal is taken by something else on
+     * the XRP Ledger - URITokenMint sits on the ordinal that network gives to
+     * XChainAddClaimAttestation. Encoding is unambiguous only relative to a set
+     * of definitions, and this is what proves the bundled set is the one in use.
+     *
+     * The transaction is built here, out of common fields only. A type specific
+     * field would have to exist in both networks' definitions for the XRPL
+     * codec to get as far as reading it, and the Xahau fields only exist there
+     * today because xrpl_php still merges its Hooks definitions on top of the
+     * XRP Ledger's - which 3.0.0 removes.
      */
-    protected function assertTheXrplCodecReadsItAs(string $xrplType, array $tx): void
+    protected function assertTheXrplCodecReadsItAs(string $xrplType): void
     {
-        $hex = Xahau::codec()->encode($tx);
+        $type = (new ReflectionClass(static::modelClass()))->getShortName();
 
-        $this->assertSame($tx['TransactionType'], Xahau::codec()->decode($hex)['TransactionType']);
+        $hex = Xahau::codec()->encode([
+            'TransactionType' => $type,
+            'Account' => self::ACCOUNT,
+            'Fee' => '10',
+            'Sequence' => 1,
+        ]);
+
+        $this->assertSame($type, Xahau::codec()->decode($hex)['TransactionType']);
         $this->assertSame($xrplType, (new BinaryCodec())->decode($hex)['TransactionType']);
     }
 }
