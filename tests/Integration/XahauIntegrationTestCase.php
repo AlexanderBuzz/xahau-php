@@ -104,7 +104,7 @@ abstract class XahauIntegrationTestCase extends TestCase
             return self::$secondary;
         }
 
-        $wallet = Wallet::generate();
+        $wallet = Xahau::generateWallet();
 
         self::client()->submitAndWait([
             'TransactionType' => 'Remit',

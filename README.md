@@ -8,8 +8,7 @@ PHP SDK for the [Xahau Network](https://xahau.network), built on
 > `src/Hooks/`, plus `Remit`, `SetRemarks` and the two Cron types that had no
 > model anywhere, and `XahauClient` fills in `NetworkID`, asks the node what a
 > transaction costs and knows the faucets. An integration suite runs the whole
-> thing against the Xahau testnet. Still open before the first release:
-> `examples/`.
+> thing against the Xahau testnet, and `examples/` covers it end to end.
 
 ## Why a separate package
 
@@ -102,6 +101,39 @@ Xahau also has six common fields the XRP Ledger does not - `HookParameters`,
 `PreviousTxnID` - and lacks `Delegate`. `XahauTransaction`, the base class of
 every model here, adjusts the shared list accordingly.
 
+## Examples
+
+Seven scripts under `examples/`, each of which runs against the testnet:
+
+| | |
+|---|---|
+| `client.php` | connecting, and checking the bundled definitions against the node's |
+| `fees.php` | why Xahau needs its own fee model - nothing is submitted |
+| `faucet-wallet.php` | getting an account with money on it |
+| `remit.php` | sending to an account that does not exist yet |
+| `uritoken.php` | mint, offer, buy, remark, burn |
+| `set-hook.php` | installing a hook and taking it off again |
+| `invoke.php` | setting hooks off, with parameters |
+
+```console
+php examples/fees.php
+```
+
+`fees.php` is the one to read first if you only read one. It autofills the same
+transaction type at three sizes and prints what the node charges for each:
+
+```
+nothing but the transaction     10 drops
+a 64 byte payload               74 drops
+a 512 byte payload              522 drops
+141 bytes of web assembly       70510 drops
+```
+
+The XRP Ledger's formula would put the same number on all four.
+
+Export `XAHAU_TEST_SEED` before running several in a row, or the faucet will
+refuse - `faucet-wallet.php` prints the line to copy.
+
 ## Tests
 
 ```console
@@ -111,8 +143,9 @@ vendor/bin/phpunit --testsuite integration   # talks to the Xahau testnet
 ```
 
 The integration suite mints a URIToken, sells it, buys it, remarks on it and
-burns it; it creates an account with a `Remit`, and it checks the bundled
-definitions against the ones the node reports. Two things steer it:
+burns it; it installs a hook and takes it off again; it creates an account with
+a `Remit`; it checks the bundled definitions against the ones the node reports;
+and it runs every example. Two things steer it:
 
 | | |
 |---|---|

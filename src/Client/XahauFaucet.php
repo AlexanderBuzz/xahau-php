@@ -13,6 +13,7 @@ namespace Hardcastle\Xahau_PHP\Client;
 use Exception;
 use Hardcastle\XRPL_PHP\Client\Faucet;
 use Hardcastle\XRPL_PHP\Client\JsonRpcClient;
+use Hardcastle\Xahau_PHP\Xahau;
 use Hardcastle\XRPL_PHP\Wallet\Wallet;
 
 /**
@@ -64,8 +65,14 @@ class XahauFaucet extends Faucet
         ?string $faucetPath = null,
         ?string $amount = null
     ): array {
+        // The wallet is generated here rather than left to the parent, which
+        // would build it without definitions: a wallet signs through the
+        // binary codec, so one made that way signs a Xahau transaction against
+        // the XRP Ledger's definitions. That goes unnoticed for as long as
+        // every field happens to exist on both networks, and stops at the
+        // first that does not - HookName, for one.
         return parent::fundWallet(
-            $wallet,
+            $wallet ?? Xahau::generateWallet(),
             $faucetHost ?? $this->faucetHost(),
             $faucetPath ?? self::FAUCET_PATH,
             $amount

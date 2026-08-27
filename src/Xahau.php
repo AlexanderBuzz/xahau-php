@@ -75,6 +75,8 @@ final class Xahau
     }
 
     /**
+     * A wallet for an existing account.
+     *
      * @param string $seed
      * @return Wallet
      * @throws Exception
@@ -82,6 +84,23 @@ final class Xahau
     public static function wallet(string $seed): Wallet
     {
         return Wallet::fromSeed($seed, self::definitions());
+    }
+
+    /**
+     * A wallet for a new account.
+     *
+     * Signing runs through the binary codec, so a wallet built without
+     * definitions signs against the XRP Ledger's - which mostly works, right
+     * up to the first field the two networks do not share. Wallet::generate()
+     * on its own is therefore the wrong call in a Xahau application.
+     *
+     * @param string $algorithm
+     * @return Wallet
+     * @throws Exception
+     */
+    public static function generateWallet(string $algorithm = Wallet::DEFAULT_ALGORITHM): Wallet
+    {
+        return Wallet::generate($algorithm, self::definitions());
     }
 
     /**
