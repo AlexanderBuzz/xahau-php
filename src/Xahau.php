@@ -11,7 +11,7 @@
 namespace Hardcastle\Xahau_PHP;
 
 use Exception;
-use Hardcastle\XRPL_PHP\Client\JsonRpcClient;
+use Hardcastle\Xahau_PHP\Client\XahauClient;
 use Hardcastle\XRPL_PHP\Core\RippleBinaryCodec\BinaryCodec;
 use Hardcastle\XRPL_PHP\Core\RippleBinaryCodec\Definitions\Definitions;
 use Hardcastle\XRPL_PHP\Wallet\Wallet;
@@ -85,12 +85,20 @@ final class Xahau
     }
 
     /**
+     * A client for a Xahau node.
+     *
+     * XahauClient is a JsonRpcClient with the three collaborators replaced
+     * that Xahau needs differently: it fills in NetworkID, asks the node what
+     * a transaction costs instead of applying the XRP Ledger's fee formula,
+     * and knows where the Xahau faucets are.
+     *
      * @param string $connectionUrl
-     * @return JsonRpcClient
+     * @param int|null $networkId Pin it, rather than have it read from the node
+     * @return XahauClient
      * @throws Exception
      */
-    public static function client(string $connectionUrl = self::MAINNET): JsonRpcClient
+    public static function client(string $connectionUrl = self::MAINNET, ?int $networkId = null): XahauClient
     {
-        return new JsonRpcClient($connectionUrl, null, null, 3.0, self::definitions());
+        return new XahauClient($connectionUrl, null, null, 3.0, self::definitions(), $networkId);
     }
 }

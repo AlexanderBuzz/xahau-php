@@ -34,7 +34,8 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^11.5",
-    "vimeo/psalm": "^6.8"
+    "vimeo/psalm": "^6.8",
+    "donatj/mock-webserver": "^2.10"
   },
   "scripts": {
     "psalm": "vendor/bin/psalm --config=psalm.xml",

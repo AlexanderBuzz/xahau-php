@@ -3,11 +3,12 @@
 PHP SDK for the [Xahau Network](https://xahau.network), built on
 [hardcastle/xrpl_php](https://github.com/AlexanderBuzz/xrpl-php).
 
-> **Status: the transaction types are here.** All fifteen Xahau-only types
+> **Status: types and client are here.** All fifteen Xahau-only types
 > are modelled and covered - the eleven that used to live in xrpl_php's
 > `src/Hooks/`, plus `Remit`, `SetRemarks` and the two Cron types that had no
-> model anywhere. Still missing before the first release: a client that fills
-> in `NetworkID` and asks the node for the fee the way Xahau expects.
+> model anywhere, and `XahauClient` fills in `NetworkID`, asks the node what a
+> transaction costs and knows the faucets. Still open before the first release:
+> integration tests and examples against the testnet.
 
 ## Why a separate package
 
@@ -37,22 +38,44 @@ use Hardcastle\Xahau_PHP\Xahau;
 $client = Xahau::client(Xahau::MAINNET);   // or Xahau::TESTNET
 $wallet = Xahau::wallet($seed);
 
-$tx = [
+$client->submitAndWait([
     'TransactionType' => 'Remit',
     'Account' => $wallet->getAddress(),
     'Destination' => $destination,
-    'NetworkID' => Xahau::MAINNET_NETWORK_ID,
-];
-
-$signed = $wallet->sign($client->autofill($tx));
-$client->submitAndWait($signed['tx_blob']);
+], autofill: true, wallet: $wallet);
 ```
+
+`NetworkID` and the fee are filled in for you. On a test network,
+`$client->getFaucet()->fundWallet()` hands back a funded wallet.
 
 `Xahau::codec()` returns a `BinaryCodec` on Xahau's definitions, and
 `Xahau::definitions()` the definitions themselves, should you need to pass them
 somewhere yourself.
 
-`NetworkID` is required by Xahau on every transaction.
+## What the client does differently
+
+`XahauClient` is xrpl_php's `JsonRpcClient` with three of its collaborators
+replaced; everything else - submitting, balances, the order book - is shared.
+
+**The fee comes from the node.** A transaction sets off the hooks of the sender
+and of the receiver, up to four each, and the originator pays for all of them,
+so the cost belongs to the transaction rather than to the network's current
+load. The XRP Ledger's base fee times load factor times a cushion is the wrong
+model. Instead the transaction is encoded unsigned, with `Fee` at zero, and
+handed to the `fee` command, which answers with what that transaction costs.
+`getFeeXrp()` still returns the network's base fee in XRP; the Xahau number is
+`getFeeEstimateDrops()`, in drops, which is what a `Fee` field holds.
+
+**`NetworkID` is mandatory**, and is filled in before the fee is worked out -
+it is part of the transaction the node prices, and part of what gets signed.
+Pass it to `Xahau::client()` to save the lookup, otherwise it is read from the
+node once.
+
+**The faucets are named explicitly.** xrpl_php infers a faucet from the
+connection URL by looking for `testnet`, and the Xahau testnet is at
+`xahau-test.net` - `test.net`, not `testnet` - so the lookup finds nothing.
+`XahauFaucet` knows `xahau-test.net` and the JSHooks devnet, and refuses to
+answer for mainnet rather than pointing at a testnet faucet.
 
 ## Transaction types
 
