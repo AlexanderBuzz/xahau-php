@@ -3,11 +3,11 @@
 PHP SDK for the [Xahau Network](https://xahau.network), built on
 [hardcastle/xrpl_php](https://github.com/AlexanderBuzz/xrpl-php).
 
-> **Status: the transaction types are here.** All thirteen Xahau-only types
+> **Status: the transaction types are here.** All fifteen Xahau-only types
 > are modelled and covered - the eleven that used to live in xrpl_php's
-> `src/Hooks/` plus `Remit` and `SetRemarks`. Still missing before the first
-> release: `Cron`/`CronSet`, and a client that fills in `NetworkID` and asks
-> the node for the fee the way Xahau expects.
+> `src/Hooks/`, plus `Remit`, `SetRemarks` and the two Cron types that had no
+> model anywhere. Still missing before the first release: a client that fills
+> in `NetworkID` and asks the node for the fee the way Xahau expects.
 
 ## Why a separate package
 
@@ -64,7 +64,8 @@ Xahau-only, modelled here:
 | `URITokenMint`, `URITokenBurn`, `URITokenBuy`, `URITokenCreateSellOffer`, `URITokenCancelSellOffer` | URITokens |
 | `Remit`, `SetRemarks` | sending, and remarks on any object |
 | `Invoke`, `Import`, `ClaimReward` | hook calls, migration from the XRP Ledger, balance rewards |
-| `GenesisMint`, `UNLReport` | pseudo transactions, readable but not submittable |
+| `CronSet` | schedules an alarm that later fires the account's hooks |
+| `Cron`, `GenesisMint`, `UNLReport` | pseudo transactions, readable but not submittable |
 
 The 47 types Xahau shares with the XRP Ledger are used straight from
 xrpl_php - a model carries only its field list, and the ordinal comes from the
