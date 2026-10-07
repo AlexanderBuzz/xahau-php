@@ -62,8 +62,11 @@ final class WalletDefinitionsTest extends TestCase
 
     /**
      * The other half of the statement: without definitions the same
-     * transaction cannot be signed at all. If this ever stops throwing, the
-     * XRP Ledger has grown a HookName and the test above proves less than it
+     * transaction cannot be signed at all. Which field the XRP Ledger codec
+     * trips over first depends on what its definitions know - xrpl_php 2.x
+     * merged a Hooks entry in and stopped at HookName, 3.0.0 knows no Hook
+     * field at all and stops at Hooks. If this ever stops throwing, the XRP
+     * Ledger has grown the Hook fields and the test above proves less than it
      * looks like it does.
      */
     public function testAWalletWithoutDefinitionsCannotSignThem(): void
@@ -71,7 +74,7 @@ final class WalletDefinitionsTest extends TestCase
         $wallet = Wallet::generate();
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('HookName');
+        $this->expectExceptionMessageMatches('/Field (Hooks|Hook|HookName) not found in definitions/');
 
         $wallet->sign(self::setHook($wallet->getAddress()));
     }
