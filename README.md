@@ -3,7 +3,7 @@
 PHP SDK for the [Xahau Network](https://xahau.network), built on
 [hardcastle/xrpl_php](https://github.com/AlexanderBuzz/xrpl-php).
 
-> **Status: types and client are here.** All fifteen Xahau-only types
+> **Status: ready for 1.0.0.** All fifteen Xahau-only types
 > are modelled and covered - the eleven that used to live in xrpl_php's
 > `src/Hooks/`, plus `Remit`, `SetRemarks` and the two Cron types that had no
 > model anywhere, and `XahauClient` fills in `NetworkID`, asks the node what a

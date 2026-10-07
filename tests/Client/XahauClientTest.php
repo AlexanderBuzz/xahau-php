@@ -265,4 +265,20 @@ final class XahauClientTest extends TestCase
 
         $this->fail("the node was never sent a {$method} request");
     }
+
+    /**
+     * The short names resolve here, not in xrpl_php, whose network table is
+     * the XRP Ledger's and carries no Xahau entries from 3.0.0 on. A URL goes
+     * through untouched. Nothing is sent: the client only reads the node when
+     * asked for the NetworkID or a fee.
+     */
+    public function testShortNamesResolveToTheXahauHosts(): void
+    {
+        $this->assertSame(Xahau::TESTNET, (new XahauClient('xahau_testnet', networkId: 1))->getConnectionUrl());
+        $this->assertSame(Xahau::TESTNET, (new XahauClient('testnet', networkId: 1))->getConnectionUrl());
+        $this->assertSame(Xahau::MAINNET, (new XahauClient('xahau_mainnet', networkId: 1))->getConnectionUrl());
+        $this->assertSame(Xahau::MAINNET, (new XahauClient('mainnet', networkId: 1))->getConnectionUrl());
+        $this->assertSame(Xahau::MAINNET, (new XahauClient(networkId: 1))->getConnectionUrl());
+        $this->assertSame('https://node.example', (new XahauClient('https://node.example', networkId: 1))->getConnectionUrl());
+    }
 }

@@ -261,4 +261,17 @@ final class DefinitionsConformanceTest extends TestCase
 
         return true;
     }
+
+    /**
+     * The bundled file carries the digest the node reported with it, so a
+     * copy can be told from the node's current set without a field-by-field
+     * comparison (examples/client.php does the comparison; this is the cheap
+     * check).
+     */
+    public function testTheDefinitionsCarryTheNodesDigest(): void
+    {
+        $raw = json_decode((string) file_get_contents(__DIR__ . '/../definitions/definitions.json'), true, 512, JSON_THROW_ON_ERROR);
+
+        $this->assertMatchesRegularExpression('/^[0-9A-F]{64}$/', $raw['hash']);
+    }
 }

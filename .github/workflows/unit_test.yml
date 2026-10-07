@@ -31,4 +31,4 @@ jobs:
         run: vendor/bin/phpunit --testsuite unit --exclude-group integration
 
       - name: Run Psalm
-        run: vendor/bin/psalm --config=psalm.xml --no-progress
+        run: vendor/bin/psalm --config=psalm.xml --no-progress --no-cache

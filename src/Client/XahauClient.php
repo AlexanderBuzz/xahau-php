@@ -36,7 +36,8 @@ class XahauClient extends JsonRpcClient
     private ?int $networkId;
 
     /**
-     * @param string $connectionUrl A URL, or a short name such as 'xahau_testnet'
+     * @param string $connectionUrl A URL, or one of the short names 'mainnet',
+     *   'testnet', 'xahau_mainnet', 'xahau_testnet'
      * @param float|null $feeCushion Unused on Xahau, where the node prices the transaction
      * @param string|null $maxFeeXrp
      * @param float $timeout
@@ -55,12 +56,30 @@ class XahauClient extends JsonRpcClient
         $this->networkId = $networkId;
 
         parent::__construct(
-            $connectionUrl,
+            self::resolveConnectionUrl($connectionUrl),
             $feeCushion,
             $maxFeeXrp,
             $timeout,
             $definitions ?? Xahau::definitions()
         );
+    }
+
+    /**
+     * The short names this package understands, resolved here rather than by
+     * xrpl_php: its network table is the XRP Ledger's, and from 3.0.0 on it
+     * carries no Xahau entries. A string that is not a short name is taken to
+     * be a URL and passed through.
+     *
+     * @param string $connection
+     * @return string
+     */
+    private static function resolveConnectionUrl(string $connection): string
+    {
+        return match (strtolower($connection)) {
+            'mainnet', 'xahau_mainnet', 'xahau' => Xahau::MAINNET,
+            'testnet', 'xahau_testnet' => Xahau::TESTNET,
+            default => $connection,
+        };
     }
 
     /**

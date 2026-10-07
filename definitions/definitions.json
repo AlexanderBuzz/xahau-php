@@ -4328,10 +4328,9 @@
       "vetoed": "Obsolete"
     },
     "CF08E97862F50AAD9EF92DE2BCD32A4A951800125F7D51D2188D3BF03D72DF0C": {
-      "enabled": false,
+      "enabled": true,
       "name": "fixGuardDepth32",
-      "supported": true,
-      "vetoed": true
+      "supported": true
     },
     "D686F2538F410C9D0D856788E98E3579595DAF7B38D38887F81ECAC934B06040": {
       "enabled": true,
@@ -4403,10 +4402,9 @@
       "supported": true
     },
     "F709B3C87FD60822407FCC0217BF965F4B490141427777C4605A84A73DF15D51": {
-      "enabled": false,
+      "enabled": true,
       "name": "fixIOULockedBalanceInvariant",
-      "supported": true,
-      "vetoed": true
+      "supported": true
     },
     "FA4E4881FDB038DCD8D7DFD850A304546E0B2844CACC3AB97CA41136A03E49F5": {
       "enabled": true,
@@ -4425,5 +4423,6 @@
       "vetoed": true
     }
   },
+  "hash": "33356850E2B1485D1695F5D0CD191FB44F45A91D63BB31110FDD6806C7120881",
   "native_currency_code": "XAH"
 }
