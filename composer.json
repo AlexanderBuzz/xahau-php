@@ -1,5 +1,5 @@
 {
-  "name": "hardcastle/xahau_php",
+  "name": "hardcastle/xahau-php",
   "description": "PHP SDK / Client for the Xahau Network, built on hardcastle/xrpl_php",
   "type": "library",
   "keywords": [

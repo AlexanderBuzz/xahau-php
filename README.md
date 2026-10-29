@@ -27,7 +27,7 @@ transaction types; everything else comes from xrpl_php.
 ## Installation
 
 ```console
-composer require hardcastle/xahau_php
+composer require hardcastle/xahau-php
 ```
 
 ## Usage
