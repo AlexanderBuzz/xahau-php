@@ -41,7 +41,7 @@ final class Xahaud202610Test extends XahauIntegrationTestCase
             'AppLoader' => $hex,
         ], $wallet);
 
-        $this->assertSame($hex, $published['AppLoader']);
+        $this->assertSame($hex, $this->appLoaderNode($published, 'CreatedNode')['NewFields']['AppLoader']);
         // One drop per byte comes on top of the base fee, and the client has
         // to have asked the node for that rather than worked it out itself.
         $this->assertGreaterThan(strlen($html), (int)$published['Fee']);
@@ -52,7 +52,22 @@ final class Xahaud202610Test extends XahauIntegrationTestCase
             'Account' => $wallet->getAddress(),
             'AppLoader' => '',
         ], $wallet);
+        $this->assertSame($hex, $this->appLoaderNode($removed, 'DeletedNode')['FinalFields']['AppLoader']);
         fwrite(STDERR, "AccountSet AppLoader removed: {$removed['hash']}" . PHP_EOL);
+    }
+
+    /**
+     * What the transaction did to the account's AppLoader ledger object.
+     */
+    private function appLoaderNode(array $result, string $change): array
+    {
+        foreach ($result['meta']['AffectedNodes'] as $node) {
+            if (($node[$change]['LedgerEntryType'] ?? null) === 'AppLoader') {
+                return $node[$change];
+            }
+        }
+
+        $this->fail("The transaction has no {$change} of an AppLoader.");
     }
 
     public function testTheDestinationCancelsAnEscrow(): void
