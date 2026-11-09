@@ -33,7 +33,12 @@ $bundled = Xahau::definitions();
 
 $drifted = [];
 foreach ($live['TRANSACTION_TYPES'] as $name => $ordinal) {
-    if ($bundled->mapSpecificFieldFromValue('TransactionType', (string)$name) !== $ordinal) {
+    try {
+        if ($bundled->mapSpecificFieldFromValue('TransactionType', (string)$name) !== $ordinal) {
+            $drifted[] = $name;
+        }
+    } catch (Exception) {
+        // A type the bundled set has never heard of is drift as well.
         $drifted[] = $name;
     }
 }

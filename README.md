@@ -88,13 +88,18 @@ Xahau-only, modelled here:
 | `Remit`, `SetRemarks` | sending, and remarks on any object |
 | `Invoke`, `Import`, `ClaimReward` | hook calls, migration from the XRP Ledger, balance rewards |
 | `CronSet` | schedules an alarm that later fires the account's hooks |
-| `Cron`, `GenesisMint`, `UNLReport` | pseudo transactions, readable but not submittable |
+| `Cron`, `Entropy`, `GenesisMint`, `UNLReport` | pseudo transactions, readable but not submittable |
 
-The 47 types Xahau shares with the XRP Ledger are used straight from
+`AccountSet` exists on both networks but is modelled here too, because Xahau
+adds `AppLoader` and `HookStateScale`, which xrpl_php's model refuses.
+
+The other types Xahau shares with the XRP Ledger are used straight from
 xrpl_php - a model carries only its field list, and the ordinal comes from the
 definitions handed to the codec. Being in the definitions is not the same as
 being live, though: Xahau inherited the definitions of several XRPL amendments
 that are not enabled on it. Check `feature` on a node before relying on one.
+One rule differs on a shared type: with `EscrowDestinationCancel`, the
+destination of an escrow may cancel it at any time, unless it is a self-escrow.
 
 Xahau also has six common fields the XRP Ledger does not - `HookParameters`,
 `HookName`, `EmitDetails`, `FirstLedgerSequence`, `OperationLimit` and
@@ -103,7 +108,7 @@ every model here, adjusts the shared list accordingly.
 
 ## Examples
 
-Seven scripts under `examples/`, each of which runs against the testnet:
+Eight scripts under `examples/`, each of which runs against the testnet:
 
 | | |
 |---|---|
@@ -111,6 +116,7 @@ Seven scripts under `examples/`, each of which runs against the testnet:
 | `fees.php` | why Xahau needs its own fee model - nothing is submitted |
 | `faucet-wallet.php` | getting an account with money on it |
 | `remit.php` | sending to an account that does not exist yet |
+| `app-loader.php` | publishing a Progressive Web App's bootloader on the ledger |
 | `uritoken.php` | mint, offer, buy, remark, burn |
 | `set-hook.php` | installing a hook and taking it off again |
 | `invoke.php` | setting hooks off, with parameters |
