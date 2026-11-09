@@ -12,6 +12,7 @@ namespace Hardcastle\Xahau_PHP\Test\Integration;
 
 use Hardcastle\XRPL_PHP\Models\Ledger\LedgerRequest;
 use Hardcastle\Xahau_PHP\Models\Transaction\TransactionTypes\Entropy;
+use Hardcastle\Xahau_PHP\Xahau;
 use PHPUnit\Framework\Attributes\Group;
 
 /**
@@ -100,5 +101,30 @@ final class Xahaud202610Test extends XahauIntegrationTestCase
             unset($tx['hash'], $tx['metaData']);
             $this->assertEquals($tx, (new Entropy($tx))->toArray());
         }
+    }
+
+    public function testALedgerDecodesFromItsBinaryForm(): void
+    {
+        $this->requireAmendment('RNG');
+
+        $ledger = self::request(new LedgerRequest(
+            ledgerIndex: 'validated',
+            transactions: true,
+            expand: true,
+            binary: true
+        ))['ledger'];
+
+        $codec = Xahau::codec();
+        $types = [];
+
+        foreach ($ledger['transactions'] as $tx) {
+            $decoded = $codec->decode($tx['tx_blob']);
+            $types[] = $decoded['TransactionType'];
+
+            $this->assertSame($tx['tx_blob'], $codec->encode($decoded));
+            $this->assertArrayHasKey('AffectedNodes', $codec->decode($tx['meta']));
+        }
+
+        $this->assertContains('Entropy', $types);
     }
 }

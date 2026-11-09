@@ -12,9 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   refuses `AppLoader` (amendment `PWALoader`, enabled on Mainnet) and
   `HookStateScale`. `examples/app-loader.php` publishes a bootloader.
 - **`Entropy`**, the pseudo transaction of the amendment `RNG`, readable from
-  the JSON a node returns. Decoding its binary form needs a change in xrpl_php.
+  JSON and from its binary form.
 
 ### Changed
+- **Requires `hardcastle/xrpl_php` `^3.2.1`,** the first version that reads the
+  empty `Account` of a pseudo transaction. If your application is held on 2.x,
+  update it to 3.x first.
 - **Definitions refreshed** from build `2026.10.13-release+4119`: `AppLoader`,
   `Entropy`, `SetManifest` and the other additions of that release now encode;
   with the 1.0.0 set they failed as unknown. The types `Contract`,

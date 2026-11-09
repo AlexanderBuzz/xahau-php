@@ -21,9 +21,7 @@ use Hardcastle\XRPL_PHP\Core\RippleBinaryCodec\Types\UnsignedInt32;
  *
  * A pseudo transaction: each validator on the UNLReport commits to a secret
  * with NextRandomDigest and reveals it as RandomData one ledger later, at the
- * start of the ledger. The model is here to read it back from the JSON a node
- * returns. Decoding its binary form needs an xrpl_php that can read an empty
- * Account, which is what a pseudo transaction carries.
+ * start of the ledger. The model is here to read it back.
  *
  * https://github.com/Xahau/xahaud/releases/tag/2026.10.13-release%2B4119
  */

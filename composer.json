@@ -30,7 +30,7 @@
   },
   "require": {
     "php": "^8.2",
-    "hardcastle/xrpl_php": "^2.3 || ^3.0"
+    "hardcastle/xrpl_php": "^3.2.1"
   },
   "require-dev": {
     "phpunit/phpunit": "^11.5",

@@ -10,7 +10,6 @@
 
 namespace Hardcastle\Xahau_PHP\Test\Models\Transaction\TransactionTypes;
 
-use Exception;
 use Hardcastle\Xahau_PHP\Models\Transaction\TransactionTypes\Entropy;
 use Hardcastle\Xahau_PHP\Test\Models\Transaction\TransactionTypeTestCase;
 use Hardcastle\Xahau_PHP\Xahau;
@@ -52,18 +51,13 @@ final class EntropyTest extends TransactionTypeTestCase
     public function testItReadsARealOneOffTheTestnet(): void
     {
         $codec = Xahau::codec();
-
-        try {
-            $tx = $codec->decode(self::TESTNET_BLOB);
-        } catch (Exception $e) {
-            // A pseudo transaction's Account is empty on the wire (rippled's
-            // STAccount::add), and xrpl_php's AccountId always reads 20 bytes.
-            $this->markTestIncomplete('xrpl_php cannot read an empty AccountID yet: ' . $e->getMessage());
-        }
+        $tx = $codec->decode(self::TESTNET_BLOB);
 
         $this->assertSame('Entropy', $tx['TransactionType']);
         $this->assertSame(13909898, $tx['LedgerSequence']);
         $this->assertSame('466B8A7BE0573881F5D59611829C9D9381AE83E57D1C1BAF30235FC94CF9291E', $tx['RandomData']);
+        // The Account of a pseudo transaction is empty on the wire, not zero.
+        $this->assertSame('', $tx['Account']);
         $this->assertSame(self::TESTNET_BLOB, $codec->encode($tx));
     }
 }
