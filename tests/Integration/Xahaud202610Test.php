@@ -31,7 +31,8 @@ final class Xahaud202610Test extends XahauIntegrationTestCase
     {
         $this->requireAmendment('PWALoader');
 
-        $wallet = self::primaryWallet();
+        // Created fresh by this run, so it cannot have a bootloader already.
+        $wallet = self::secondaryWallet();
         $html = '<!DOCTYPE html><html><body>xahau-php</body></html>';
         $hex = strtoupper(bin2hex($html));
 
