@@ -25,6 +25,10 @@ use Hardcastle\XRPL_PHP\Core\RippleBinaryCodec\Types\StArray;
  * referenced by HookHash instead. HookOn, HookOnIncoming, HookOnOutgoing and
  * HookCanEmit are 256 bit masks over the transaction types, not amounts.
  *
+ * Where the amendment HookOnV2_1 is enabled, HookOn and the pair HookOnIncoming
+ * and HookOnOutgoing exclude each other; the pair must be given together and
+ * must differ.
+ *
  * https://docs.xahau.network/technical/protocol-reference/transactions/transaction-types/sethook
  */
 class SetHook extends XahauTransaction

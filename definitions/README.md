@@ -20,8 +20,8 @@ json.dump(r, open('definitions.json', 'w'), indent=2)
 "
 ```
 
-Captured 2026-10-07 from build `2026.6.21-release+3350`: 78 transaction types, 337 fields,
-digest `33356850E2B1485D1695F5D0CD191FB44F45A91D63BB31110FDD6806C7120881`.
+Captured 2026-11-09 from build `2026.10.13-release+4119`: 77 transaction types, 347 fields,
+digest `74146CB48A882D4B211E92FB56659DF9C335997823A69944F65A48714737E5C0`.
 
 Applications that would rather not wait for a release here can fetch the
 definitions at runtime and hand them over with `Xahau::useDefinitions()`.

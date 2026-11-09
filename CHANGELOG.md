@@ -7,7 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-The first release. Everything below is what 1.0.0 ships with.
+### Added
+- **`AccountSet` with Xahau's fields.** A model of its own, because xrpl_php's
+  refuses `AppLoader` (amendment `PWALoader`, enabled on Mainnet) and
+  `HookStateScale`. `examples/app-loader.php` publishes a bootloader.
+- **`Entropy`**, the pseudo transaction of the amendment `RNG`, readable from
+  JSON and from its binary form.
+
+### Changed
+- **Requires `hardcastle/xrpl_php` `^3.2.1`,** the first version that reads the
+  empty `Account` of a pseudo transaction. If your application is held on 2.x,
+  update it to 3.x first.
+- **Definitions refreshed** from build `2026.10.13-release+4119`: `AppLoader`,
+  `Entropy`, `SetManifest` and the other additions of that release now encode;
+  with the 1.0.0 set they failed as unknown. The types `Contract`,
+  `NicknameSet` and `SpinalTap` are gone because the node no longer lists them.
+- `SetHook`'s docblock states the stricter rules of `HookOnV2_1`, and the README
+  the new rule of `EscrowDestinationCancel`.
+
+### Fixed
+- `examples/client.php` reports a type the bundled set does not know as drift
+  instead of stopping with an exception.
+
+## [1.0.0] - 2026-10-29
+
+The first release.
 
 ### Added
 - The fifteen Xahau-only transaction types as models: `SetHook`, the five
