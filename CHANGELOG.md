@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Requires `brick/math` `>=0.14.2 <0.15` and `hardcastle/xrpl_php` `^3.2.2`.**
+  The fee calculator rounds with `RoundingMode::Ceiling`, which brick/math has
+  since 0.14.2. The package took brick/math only through xrpl_php, whose 3.2.1
+  still allowed 0.11 to 0.14.1; with such a version, `autofill` stopped with
+  "Undefined constant `Brick\Math\RoundingMode::Ceiling`". If Composer keeps an
+  older brick/math in your project, run `composer update brick/math`.
+
 ## [1.1.0] - 2026-11-09
 
 ### Added
