@@ -28,6 +28,11 @@
       "Hardcastle\\Xahau_PHP\\Test\\": "tests/"
     }
   },
+  "config": {
+    "platform": {
+      "php": "8.2.27"
+    }
+  },
   "require": {
     "php": "^8.2",
     "hardcastle/xrpl_php": "^3.2.1"
