@@ -28,6 +28,11 @@
       "Hardcastle\\Xahau_PHP\\Test\\": "tests/"
     }
   },
+  "config": {
+    "platform": {
+      "php": "8.2.27"
+    }
+  },
   "require": {
     "php": "^8.2",
     "brick/math": ">=0.14.2 <0.15",
