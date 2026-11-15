@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **`hardcastle/xrpl_php` 4.0 and `brick/math` 0.15 to 1.0.** The package
+  requires `hardcastle/xrpl_php` `^3.2.2 || ^4.0` and `brick/math`
+  `>=0.14.2 <0.21 || ^1.0`. With xrpl_php 4.0 Composer may also pick Guzzle 8.
+  Nothing in this package changes: it reads node responses through the promise
+  of `request()`, which rejected on transport failures in xrpl_php 3 already,
+  so the 4.0 change to `syncRequest()` does not reach it. To move to xrpl_php
+  4.0, run `composer update hardcastle/xrpl_php --with-all-dependencies`; its
+  MIGRATION.md covers code of your own that calls `syncRequest()`.
+
 ## [1.1.1] - 2026-11-13
 
 ### Fixed
