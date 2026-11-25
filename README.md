@@ -48,6 +48,16 @@ $client->submitAndWait([
 `NetworkID` and the fee are filled in for you. On a test network,
 `$client->getFaucet()->fundWallet()` hands back a funded wallet.
 
+A signed transaction somebody hands you, a payment your server is to submit
+for instance, is checked offline with `Xahau::verifySignature($txBlob)`. It
+tests the signature against the transaction's `SigningPubKey` on Xahau's
+definitions and accepts only the canonical signatures a node accepts. It does
+not tell you that the key may sign for `Account` (master or regular key is
+ledger state), and the same transaction can arrive in more than one encoding,
+so recognise transactions you have seen by `Account` and `Sequence` - or
+`TicketSequence` when the transaction uses a ticket, since its `Sequence` is
+then 0 - not by their hash.
+
 `Xahau::codec()` returns a `BinaryCodec` on Xahau's definitions, and
 `Xahau::definitions()` the definitions themselves, should you need to pass them
 somewhere yourself.

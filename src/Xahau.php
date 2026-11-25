@@ -104,6 +104,29 @@ final class Xahau
     }
 
     /**
+     * Verify the signature of a Xahau transaction somebody else signed.
+     *
+     * Wallet::verifySignature() of xrpl_php on Xahau's definitions: it checks
+     * TxnSignature against the transaction's SigningPubKey, or against
+     * $publicKey, offline, and accepts only the canonical signatures a node
+     * accepts. Without Xahau's definitions a blob with a Xahau-only field
+     * cannot even be decoded. It proves who signed, not that the key may sign
+     * for Account; whether SigningPubKey is the account's master or regular
+     * key is ledger state. A store of transactions seen should key on Account
+     * and Sequence (or TicketSequence), not on the hash.
+     *
+     * @param string|array $transaction a tx_blob or the decoded transaction
+     * @param string|null $publicKey the key to check against, hex; defaults to SigningPubKey
+     * @return bool true if the signature is valid and canonical
+     * @throws Exception if the transaction carries no TxnSignature (a
+     *   multi-signed one included) or, without $publicKey, no SigningPubKey
+     */
+    public static function verifySignature(string|array $transaction, ?string $publicKey = null): bool
+    {
+        return Wallet::verifySignature($transaction, $publicKey, self::definitions());
+    }
+
+    /**
      * A client for a Xahau node.
      *
      * XahauClient is a JsonRpcClient with the three collaborators replaced

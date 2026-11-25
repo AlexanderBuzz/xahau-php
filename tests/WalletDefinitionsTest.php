@@ -79,6 +79,23 @@ final class WalletDefinitionsTest extends TestCase
         $wallet->sign(self::setHook($wallet->getAddress()));
     }
 
+    /**
+     * A blob somebody else signed is verified against its SigningPubKey, on
+     * Xahau's definitions; on the XRP Ledger's it does not even decode.
+     */
+    public function testAForeignBlobIsVerifiedOnXahausDefinitions(): void
+    {
+        $signer = Xahau::wallet('sEd7rnfWxwJmRditu2UpSsrZDRgtctn');
+        $blob = (string) $signer->sign(self::setHook($signer->getAddress()))['tx_blob'];
+
+        $this->assertTrue(Xahau::verifySignature($blob));
+        $this->assertTrue(Xahau::verifySignature(Xahau::codec()->decode($blob)));
+        $this->assertFalse(Xahau::verifySignature($blob, Xahau::generateWallet()->getPublicKey()));
+
+        $this->expectException(Exception::class);
+        Wallet::verifySignature($blob);
+    }
+
     public function testAWalletFromASeedCarriesThemToo(): void
     {
         $wallet = Xahau::wallet('sEd7rnfWxwJmRditu2UpSsrZDRgtctn');
