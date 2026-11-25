@@ -5,6 +5,24 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **`Xahau::verifySignature()` checks a transaction somebody else signed.** It
+  is `Wallet::verifySignature()` of xrpl_php 4.1 on Xahau's definitions: the
+  signature is tested against the transaction's `SigningPubKey`, or a key you
+  pass, offline. Through xrpl_php's default definitions a blob with a
+  Xahau-only field does not even decode. Only canonical signatures pass, as on
+  a node; xrpl_php before 4.1 also accepted a high-S or padded-DER secp256k1
+  signature and an Ed25519 signature with S above the group order, each a
+  second blob for the same transaction with another hash.
+
+### Changed
+- **Requires `hardcastle/xrpl_php` `^4.1`**, the first release with
+  `Wallet::verifySignature()` and the canonical signature check. Run
+  `composer update hardcastle/xrpl_php --with-all-dependencies`; on xrpl_php
+  3.x, its MIGRATION.md covers the move to 4.
+
 ## [1.2.0] - 2026-11-15
 
 ### Added
